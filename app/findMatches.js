@@ -28,45 +28,39 @@ module.exports = function(customers, recipients) {
     // shape the record we will store in our database
     const record = {
       'customer': `${customer.FirstName} ${customer.LastName}`,
-      'categories': null,
-      'matches': []
+      'pickupDate': customer.PickupAt,
+      'categories': 0
     };
+
     // create a date obj out of the customer's pickup info
     const pickupDate = new Date(customer.PickupAt);
-    // log what the customer is offering in the record
-    record.categories = bitsToCategories(customer.Categories);
     // now we check against all recipients
-    if (record.categories.length > 0) {
+    if (customer.Categories) {
       recipients.forEach(function(recipient) {
-        const matchRecord = {
-          'recipient': `${recipient.FirstName} ${recipient.LastName}`,
-          'distance': null,
-          'accepts': null
-        }
+        record.recipient = `${recipient.FirstName} ${recipient.LastName}`;
+        
         // first we check if a recipient is in bounds (5 miles in this case)
         const distance = calculateDistance(customer.Latitude, customer.Longitude, recipient.Latitude, recipient.Longitude)
         if ( distance <= 5) {
-          matchRecord.distance = distance.toFixed(2);
+          record.distance = distance.toFixed(2);
           // then check that the recipient is open at the pickup time
           if (isRecipientOpen(pickupDate, recipient[DAYS[pickupDate.getDay()]])){
             // then determine what goods that the customer has that the recipient will accept
             const alignedGoodsInt = whatRecipientAccepts(customer.Categories, recipient.Restrictions); 
-            matchRecord.accepts = bitsToCategories(alignedGoodsInt);
-            if (matchRecord.accepts.length > 0) {
+            if (alignedGoodsInt) {
+              record.categories = bitsToCategories(alignedGoodsInt);
               // if the recipient will accept any good that the customer has, add them to the matches array
-              record.matches.push(matchRecord);
+              Match.create(record, function(err, doc) {
+                if (err) {
+                  console.log('Error', err);
+                } else {
+                  console.log(doc);
+                }
+              })
             }
           }
         }
       });
-      // once we have found all matches for a customer add them to the database
-      Match.create(record, function(err, doc) {
-        if (err) {
-          console.log('Error', err);
-        } else {
-          console.log(doc);
-        }
-      })
     }
   });
 }

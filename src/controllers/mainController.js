@@ -2,6 +2,7 @@ angular.module('mainController', [])
 
   .controller('mainController', function($scope, $http, Matches){
 
+    $scope.name = '';
     Matches.get()
       .success(function(data) {
         $scope.matches = data;

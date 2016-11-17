@@ -3,7 +3,9 @@ const mongoose = require('mongoose');
 const Match = mongoose.model('Match', {
   customer: String,
   categories: Array,
-  matches : Array,
+  pickupDate: Date,
+  recipient: String,
+  distance: String,
 });
 
 const query = Match.remove({});

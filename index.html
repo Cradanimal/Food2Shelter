@@ -21,24 +21,23 @@
 </head>
 <body ng-controller="mainController">
     <h2 class="text-center">Copia Challenge</h2>
+    <input type="text" name="" class='form-control' ng-model='name' placeholder="Filter by Customer Name">
     <table class="table table-bordered" >
       <thead>
         <tr>
             <th>Customer</th>
             <th>Catergories</th>
-            <th>Matches</th>
+            <th>Recipient</th>
+            <th>Distance</th>
+            <th>Pickup Date</th>
         </tr>
       </thead>
-        <tr ng-repeat="match in matches">
+        <tr ng-repeat="match in matches | filter:{ customer: name }">
             <td>{{match.customer}}</td>
             <td>{{match.categories}}</td>
-            <td ng-repeat="recipient in match.matches">
-              <ul>
-                <li>recipient: {{recipient.recipient}}</li>
-                <li>distance: {{recipient.distance}}</li>
-                <li>accepts: {{recipient.accepts}}</li>
-              </ul>
-            </td>
+            <td>{{match.recipient}}</td>
+            <td>{{match.distance}}</td>
+            <td>{{match.pickupDate}}</td>
         </tr>
     </table>
 </body>

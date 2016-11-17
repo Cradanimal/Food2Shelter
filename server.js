@@ -5,7 +5,7 @@ var morgan = require('morgan');
 var bodyParser = require('body-parser');    
 
 
-mongoose.connect('mongodb://cradwimb:guest@jello.modulusmongo.net:27017/q8iZidin');
+mongoose.connect(process.env.DATABASE_URL);
 
 require('./app/seedData.js')();
 
