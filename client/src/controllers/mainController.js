@@ -1,6 +1,6 @@
 angular.module('mainController', [])
 
-  .controller('mainController', function($scope, $http, Matches){
+  .controller('mainController', function($scope, Matches){
 
 
     Matches.get()

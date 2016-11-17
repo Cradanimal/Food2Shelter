@@ -1,4 +1,4 @@
-const Match = require('./models/matches.js');
+const Match = require('./../models/match.js');
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const CATEGORIES = ['Raw Meat', 'Dairy', 'Seafood', 'Hot Prepared', 'Cold Prepared', 'Frozen'];
 const HOURS = {
@@ -25,29 +25,31 @@ const HOURS = {
 module.exports = function(customers, recipients) {
   // we will iterate over the customers and preform a series of checks against recipients
   customers.forEach(function(customer) {
-    // shape the record we will store in our database
-    const record = {
-      'customer': `${customer.FirstName} ${customer.LastName}`,
-      'pickupDate': customer.PickupAt,
-      'categories': 0
-    };
-
+    // create consts for the variables that will be reused in the inner loop
+    const customerName = `${customer.FirstName} ${customer.LastName}`;
+    const customerPickupDate = customer.PickupAt;
     // create a date obj out of the customer's pickup info
     const pickupDate = new Date(customer.PickupAt);
     // now we check against all recipients
     if (customer.Categories) {
       recipients.forEach(function(recipient) {
-        record.recipient = `${recipient.FirstName} ${recipient.LastName}`;
+        const recipientName = `${recipient.FirstName} ${recipient.LastName}`;
+          
         // determine what goods that the customer has that the recipient will accept
-        const alignedGoodsInt = whatRecipientAccepts(customer.Categories, recipient.Restrictions);
-        if (alignedGoodsInt) {    
+        const alignedCategoriesInt = whatRecipientAccepts(customer.Categories, recipient.Restrictions);
+        if (alignedCategoriesInt) {    
           // then check that the recipient is open at the pickup time
           if (isRecipientOpen(pickupDate, recipient[DAYS[pickupDate.getDay()]])){  
             // check if a recipient is in bounds (5 miles in this case)
             const distance = distanceInMiles(customer, recipient) 
             if (distance <= 5) {
-              record.distance = distance.toFixed(2);
-              record.categories = bitsToCategories(alignedGoodsInt);
+              const record = {
+                'customer': customerName,
+                'distance': distance.toFixed(2),
+                'recipient': recipientName,
+                'categories': bitsToCategories(alignedCategoriesInt),
+                'pickupDate': customerPickupDate
+              };  
               // if the recipient will accept any good that the customer has, add them to the matches array
               Match.create(record, function(err, doc) {
                 if (err) {
