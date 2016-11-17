@@ -38,16 +38,15 @@ module.exports = function(customers, recipients) {
     if (customer.Categories) {
       recipients.forEach(function(recipient) {
         record.recipient = `${recipient.FirstName} ${recipient.LastName}`;
-        
-        // first we check if a recipient is in bounds (5 miles in this case)
-        const distance = calculateDistance(customer.Latitude, customer.Longitude, recipient.Latitude, recipient.Longitude)
-        if ( distance <= 5) {
-          record.distance = distance.toFixed(2);
+        // determine what goods that the customer has that the recipient will accept
+        const alignedGoodsInt = whatRecipientAccepts(customer.Categories, recipient.Restrictions);
+        if (alignedGoodsInt) {    
           // then check that the recipient is open at the pickup time
-          if (isRecipientOpen(pickupDate, recipient[DAYS[pickupDate.getDay()]])){
-            // then determine what goods that the customer has that the recipient will accept
-            const alignedGoodsInt = whatRecipientAccepts(customer.Categories, recipient.Restrictions); 
-            if (alignedGoodsInt) {
+          if (isRecipientOpen(pickupDate, recipient[DAYS[pickupDate.getDay()]])){  
+            // check if a recipient is in bounds (5 miles in this case)
+            const distance = calculateDistance(customer.Latitude, customer.Longitude, recipient.Latitude, recipient.Longitude) 
+            if (distance <= 5) {
+              record.distance = distance.toFixed(2);
               record.categories = bitsToCategories(alignedGoodsInt);
               // if the recipient will accept any good that the customer has, add them to the matches array
               Match.create(record, function(err, doc) {
@@ -56,7 +55,7 @@ module.exports = function(customers, recipients) {
                 } else {
                   console.log(doc);
                 }
-              })
+              });
             }
           }
         }
