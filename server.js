@@ -1,8 +1,8 @@
-var express = require('express');
-var app = express();
-var mongoose = require('mongoose');         
-var morgan = require('morgan');             
-var bodyParser = require('body-parser');    
+const express = require('express');
+const app = express();
+const mongoose = require('mongoose');         
+const morgan = require('morgan');             
+const bodyParser = require('body-parser');    
 
 
 mongoose.connect(process.env.DATABASE_URL);
