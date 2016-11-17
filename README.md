@@ -2,4 +2,6 @@
 
 To run:
 mongod
-node server/server.js 
+node server/server.js
+
+nav to localhost:8080 
