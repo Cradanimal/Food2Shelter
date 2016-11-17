@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const Match = mongoose.model('Match', {
   customer: String,
   categories: Array,
-  pickupDate: Date,
+  pickupDate: String,
   recipient: String,
   distance: String,
 });
