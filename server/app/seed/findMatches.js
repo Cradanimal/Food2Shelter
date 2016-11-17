@@ -20,8 +20,6 @@ const HOURS = {
     23: 32768
   };
 
-
-
 module.exports = function(customers, recipients) {
   // we will iterate over the customers and preform a series of checks against recipients
   customers.forEach(function(customer) {

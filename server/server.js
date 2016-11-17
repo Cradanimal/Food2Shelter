@@ -5,8 +5,8 @@ const morgan = require('morgan');
 const bodyParser = require('body-parser'); 
 const path = require('path');   
 
-
-mongoose.connect(process.env.DATABASE_URL);
+const uri = process.env.DATABASE_URL || 'mongodb://localhost/food2Shelter-dev';
+mongoose.connect(uri);
 
 require('./app/seed/seedData.js')();
 
