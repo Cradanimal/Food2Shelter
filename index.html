@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html ng-app="copiaChallenge">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Copia Challenge</title>
+
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+    <style>
+        html                    { overflow-y:scroll; }
+        body                    { padding-top:50px; }
+    </style>
+
+    <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+    <script src="src/services/dataService.js"></script>
+    <script src="src/controllers/mainController.js"></script>
+    <script src="src/src.js"></script>
+
+</head>
+<body ng-controller="mainController">
+    <h2 class="text-center">Copia Challenge</h2>
+    <table class="table table-bordered" >
+      <thead>
+        <tr>
+            <th>Customer</th>
+            <th>Catergories</th>
+            <th>Matches</th>
+        </tr>
+      </thead>
+        <tr ng-repeat="match in matches">
+            <td>{{match.customer}}</td>
+            <td>{{match.categories}}</td>
+            <td ng-repeat="recipient in match.matches">
+              <ul>
+                <li>recipient: {{recipient.recipient}}</li>
+                <li>distance: {{recipient.distance}}</li>
+                <li>accepts: {{recipient.accepts}}</li>
+              </ul>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
