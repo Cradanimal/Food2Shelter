@@ -44,7 +44,7 @@ module.exports = function(customers, recipients) {
           // then check that the recipient is open at the pickup time
           if (isRecipientOpen(pickupDate, recipient[DAYS[pickupDate.getDay()]])){  
             // check if a recipient is in bounds (5 miles in this case)
-            const distance = calculateDistance(customer.Latitude, customer.Longitude, recipient.Latitude, recipient.Longitude) 
+            const distance = distanceInMiles(customer, recipient) 
             if (distance <= 5) {
               record.distance = distance.toFixed(2);
               record.categories = bitsToCategories(alignedGoodsInt);
@@ -71,27 +71,30 @@ function intToBinary(int){
     return int.toString(2);
 };
 
+function toRadCoords({ Latitude, Longitude }) {
+  return [Latitude, Longitude].map(toRad);
+}
+
 function toRad(num) {
    return num * Math.PI / 180;
 }
-// function returning the distance between two points 
-function calculateDistance(customerLat,customerLon, recipientLat, recipientLon) {
 
-  const R = 6371; // km 
-  //has a problem with the .toRad() method below.
-  const x1 = recipientLat-customerLat;
-  const dLat = toRad(x1);  
-  const x2 = recipientLon-customerLon;
-  const dLon = toRad(x2);  
-  const a = Math.sin(dLat/2) * Math.sin(dLat/2) + 
-                  Math.cos(toRad(customerLat)) * Math.cos(toRad(recipientLat)) * 
-                  Math.sin(dLon/2) * Math.sin(dLon/2);  
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-  let d = R * c; 
-  // convert to miles
-  d /= 1.60934;
-  return d 
+const R = 6371; // Earth Radius km
+const KM_PER_MILE = 1.60934;
+
+function distanceInMiles(customer, recipient) {
+  const [cLat, cLon] = toRadCoords(customer);
+  const [rLat, rLon] = toRadCoords(recipient);
+
+  const dLat = rLat - cLat;
+  const dLon = rLon - cLon;
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(cLat) * Math.cos(rLat) *
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c / KM_PER_MILE;
 }
+
 
 function isRecipientOpen(pickup, hoursOfOperation) {
   // using local hours
